@@ -9,6 +9,7 @@ pandas = "*"
 matplotlib = "*"
 pyqt6 = "*"
 folium = "*"
+pyqt6-webengine = "*"
 
 [dev-packages]
 
