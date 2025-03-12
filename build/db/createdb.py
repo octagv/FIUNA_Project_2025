@@ -1,7 +1,8 @@
 import sqlite3
 
+
 def createDb():
-    conection = sqlite3.connect("build/db/app_log.db")
+    conection = sqlite3.connect("db/app_log.db")
     cursor = conection.cursor()
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS logs
@@ -18,3 +19,7 @@ def createDb():
 
     conection.commit()
     conection.close()
+
+if __name__ == "__main__":
+    createDb()
+    print("Se ha creado correctamente")
