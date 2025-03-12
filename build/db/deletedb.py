@@ -1,0 +1,10 @@
+import sqlite3
+
+def deleteDb():
+    conection = sqlite3.connect("build/db/app_log.db")
+    cursor = conection.cursor()
+
+    cursor.execute('''DROP TABLE IF EXISTS logs''')
+
+    conection.commit()
+    conection.close()
