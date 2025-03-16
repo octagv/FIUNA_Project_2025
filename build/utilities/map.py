@@ -1,8 +1,10 @@
 import folium
 import math
 import random
+"""Funcion que genera la base del mapa"""
 def createMap(initPoint):
-    return folium.Map(initPoint, zoom_start=10)
+    return folium.Map(initPoint, zoom_start=10,max_zoom=10)
+"""Funcion que introduce un marcador al mapa"""
 def createMark(map, point, point_name):
     folium.Marker(point,popup=point_name).add_to(map)
 

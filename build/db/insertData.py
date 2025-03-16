@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 
+"""Funcion para introducir un unico dato a la base de datos"""
 def insertEntry(data):
     conection = sqlite3.connect("db/app_log.db")
     cursor = conection.cursor()
@@ -9,6 +10,7 @@ def insertEntry(data):
     conection.commit()
     conection.close() 
 
+"""Funcion para introducir varios datos a la base de datos"""
 def insertDatafromCsv(csv):
     table = pd.read_csv(csv,header=None, sep=";")
     conection = sqlite3.connect("db/app_log.db")

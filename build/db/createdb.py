@@ -1,6 +1,6 @@
 import sqlite3
 
-
+"""Funcion para crear la tabla SQL"""
 def createDb():
     conection = sqlite3.connect("db/app_log.db")
     cursor = conection.cursor()

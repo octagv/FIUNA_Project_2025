@@ -1,5 +1,5 @@
 import sqlite3
-
+"""Funcion para eliminar la Tabla"""
 def deleteDb():
     conection = sqlite3.connect("db/app_log.db")
     cursor = conection.cursor()
