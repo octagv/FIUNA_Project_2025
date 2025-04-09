@@ -28,8 +28,26 @@ Comandos de Base de Datos-------------------------------------------------------
 Comandos de Prueba----------------------------------------------------------------------------------
 -generar [nro de estaciones] [nro de logs] -> genera un numero definido de logs de una cantidad de estaciones dadas
 """
+COMMANDS_HELP = {
+    "ayuda" : "Comando que da informacion acerca de otras funciones",
+    "version" : "Devuelve la version del sistema",
+    "creditos" : "Informacion acerca de los creadores",
+    "graficar" : "Aun no añadido",
+    "mapa" : "Aun no añadido",
+    "insertar" : "Aun no añadido",
+    "crear_tabla" : "Aun no añadido",
+    "eliminar_tabla" : "Aun no añadido",
+    "ver_datos" : "Aun no añadido",
+    "exportar" : "Aun no añadido"
+}
+
 
 MAIN_WELCOME = """
 Bienvenido al Sistema Telemetrico de estaciones metereologicas
 Digite ayuda para ver los comandos
 """
+
+DATA_NAME = ["temperatura", "humedad", "viento"]
+
+VERSION_TEXT = "Version beta 0.1"
+CREDIT_TEXT = "Programa creado por Octavio Gauto y Tobias Recasens. Como parte del proyecto desafio de la materia fundamentos de programación"

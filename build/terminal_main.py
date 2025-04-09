@@ -1,5 +1,6 @@
 import re
 from terminal import text
+from terminal import commands_processor
 from utilities.generator import generateInfo
 from utilities.map import createMap, createMark
 
@@ -21,24 +22,33 @@ while True:
 
     if command[0] == "salir":
         break
+    elif command[0] == "version":
+        print(text.VERSION_TEXT)
+    elif command[0] == "creditos":
+        print(text.CREDIT_TEXT)
     elif command[0] == "generar":
         generateInfo(int(command[1]), int(command[2]))
         print("Informacion Generada")
     elif command[0] == "mapa":
-        if command[1] == "estaciones":
-            stations = getStationPoints()
-            map = createMap([-25.341975, -57.508483])
-            for station in stations:
-                createMark(map, station[1::],f"Estacion {station[0]}")
-            map.show_in_browser()
+        commands_processor.map_process(command[1::])
+    elif command[0] == "media":
+        print("Aun no añadido")
+    elif command[0] == "maxima":
+        print("Aun no añadido")
+    elif command[0] == "minima":
+        print("Aun no añadido")
     elif command[0] == "ayuda":
-        showHelp(command)
+        commands_processor.help_process(command[1::])
     elif command[0] == "eliminar_tabla":
         deleteDb()
         print("Tabla Eliminada")
     elif command[0] == "crear_tabla":
         createDb()
         print("Tabla Creada")
+    elif command[0] == "graficar":
+        print("Aun no añadido")
+    elif command[0] == "exportar":
+        print("Aun no añadido")
     else:
         print("Comando desconocido\n Digite ayuda para ver los comandos")
         
