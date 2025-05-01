@@ -38,7 +38,8 @@ COMMANDS_HELP = {
     "crear_tabla" : "Aun no añadido",
     "eliminar_tabla" : "Aun no añadido",
     "ver_datos" : "Aun no añadido",
-    "exportar" : "Aun no añadido"
+    "exportar" : "Aun no añadido",
+    "generar": "generar [nro estaciones] [nro de logs por estaciones] Ejemplo: generar 10 100 <- Genera 10 estaciones con 100 logs cada una"
 }
 
 
@@ -47,7 +48,7 @@ Bienvenido al Sistema Telemetrico de estaciones metereologicas
 Digite ayuda para ver los comandos
 """
 
-DATA_NAME = ["temperatura", "humedad", "viento"]
+DATA_NAME = ["temperatura", "humedad", "viento","radiacion","tiempo"]
 
 VERSION_TEXT = "Version beta 0.1"
 CREDIT_TEXT = "Programa creado por Octavio Gauto y Tobias Recasens. Como parte del proyecto desafio de la materia fundamentos de programación"

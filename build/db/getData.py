@@ -1,5 +1,5 @@
 import sqlite3
-
+import pandas as pd
 def getStationPoints():
     conection = sqlite3.connect("db/app_log.db")
     cursor = conection.cursor()
@@ -8,9 +8,8 @@ def getStationPoints():
     conection.close()
     return data
 def getAllData():
-    conection = sqlite3.connect("db/app_log.db")
-    cursor = conection.cursor()
-    cursor.execute("SELECT * FROM logs")
-    data = cursor.fetchall()
-    conection.close()
-    return data
+    con = sqlite3.connect("db/app_log.db")
+    df = pd.read_sql_query("SELECT * FROM logs", con)
+    con.close()
+    df['time'] = pd.to_datetime(df['time'], unit='s')
+    return df

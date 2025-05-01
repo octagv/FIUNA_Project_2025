@@ -46,7 +46,7 @@ while True:
         createDb()
         print("Tabla Creada")
     elif command[0] == "graficar":
-        print("Aun no añadido")
+        commands_processor.graph_process(command[1::])
     elif command[0] == "exportar":
         print("Aun no añadido")
     else:

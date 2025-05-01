@@ -1,22 +1,29 @@
+import pandas as pd
 from .text import *
-from utilities.map import createMap, createMark
-from db.getData import getStationPoints
+from utilities.map import createMap, createMark, createHeadMap
+from utilities.graph import graphMean, graphMin, graphMax
+from db.getData import getStationPoints, getAllData
 
 def help_process(logs):
     if not len(logs):
         print(MAIN_HELP)
-    else:
+    elif len(logs) != 1:
+        print("Solo introducir un comando")
+    elif logs[0] in COMMANDS_HELP.keys():
         print(COMMANDS_HELP[logs[0]])
+    else:
+        print("Uso incorrecto")
 
 def graph_process(logs):
-    if not len(logs):
+    if len(logs) != 1:
         print("Uso incorrecto. Para saber más ejecute: ayuda graficar")
-    elif len(logs) >= 3 and logs[0] in DATA_NAME and logs[1] in DATA_NAME and logs[2] in DATA_NAME:
-        pass
-    elif len(logs) >= 2 and logs[0] in DATA_NAME and logs[1] in DATA_NAME:
-        pass
-    elif len(logs) >= 1 and logs[0] in DATA_NAME:
-        pass
+    elif logs[0] == "media":
+        graphMean(getAllData())
+    elif logs[0] == "maxima":
+        graphMax(getAllData())
+    elif logs[0] == "minima":
+        graphMin(getAllData())
+    
     else:
         print("Uso incorrecto. Para saber más ejecute: ayuda graficar")
 
@@ -30,10 +37,12 @@ def map_process(logs):
             createMark(map, station[1::],f"Estacion {station[0]}")
         map.show_in_browser()
     elif logs[0] == "temperatura":
-        print("Aun no añadido")
+        createHeadMap(getAllData(), "temperature")
     elif logs[0] == "humedad":
-        print("Aun no añadido")
+        createHeadMap(getAllData(), "humidity")
     elif logs[0] == "viento":
-        print("Aun no añadido")
+        createHeadMap(getAllData(), "wind_speed")
+    elif logs[0] == "radiacion":
+        createHeadMap(getAllData(), "solar_radiation")
     else:
         print("Uso incorrecto. Para saber más ejecute: ayuda mapa")

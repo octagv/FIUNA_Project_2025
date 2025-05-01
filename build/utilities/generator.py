@@ -13,18 +13,20 @@ def generateStations(numOfStations):
 
 def generateInfo(numOfStations, numOfLogs):
     stations = generateStations(numOfStations)
-    for _ in range(numOfLogs):
-        number = random.randint(1,numOfStations)
-        insertData.insertEntry((
-            time.time(),
-            number,
-            stations[number-1][0],
-            stations[number-1][1],
-            36 + 5*random.random(),
-            50 + 50*random.random(),
-            18 + 10*random.random(),
-            50 + 50*random.random()
-        ))
+    base_time = int(time.time()) 
+    for j in range(numOfLogs):
+        log_time = base_time - (j * 1800)
+        for i in range(numOfStations):
+            insertData.insertEntry((
+                log_time,
+                i,
+                stations[i][0],
+                stations[i][1],
+                random.randint(20,41), #temperatura
+                random.randint(0,100), #humedad
+                random.randint(6,32), #viento
+                random.randint(0,100) #radiacion
+            ))
 
 if __name__ == "__main__":
     createdb.createDb()
