@@ -9,7 +9,12 @@ def insertEntry(data):
     data)
     conection.commit()
     conection.close() 
-
+def insertData(data):
+    conection = sqlite3.connect("db/app_log.db")
+    cursor = conection.cursor()
+    cursor.executemany("INSERT INTO logs (time, id_station, latitud, longitud, temperature, humidity, wind_speed, solar_radiation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", data)
+    conection.commit()
+    conection.close() 
 """Funcion para introducir varios datos a la base de datos"""
 def insertDatafromCsv(csv):
     table = pd.read_csv(csv,header=None, sep=";")

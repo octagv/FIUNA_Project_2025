@@ -20,7 +20,7 @@ def createHeadMapTemp(data):
         heat_data.append(frame_points)
 
     # Crear mapa base centrado
-    m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10)
+    m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10, max_zoom=10)
 
     # Agregar mapa de calor con tiempo
     folium.plugins.HeatMapWithTime(
@@ -30,7 +30,7 @@ def createHeadMapTemp(data):
         radius=80,
         max_opacity=0.8,
         use_local_extrema=False,
-        gradient={0.2: 'blue', 0.5: 'lime', 0.8: 'red'}
+        gradient={0.0: 'blue', 0.2: 'cyan', 0.5: 'yellow', 0.8: 'orange', 1.0: 'red'}
     ).add_to(m)
 
     # Guardar o mostrar
@@ -46,17 +46,17 @@ def createHeadMapTemp(data):
         heat_data.append(frame_points)
 
     # Crear mapa base centrado
-    m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10)
+    m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10, max_zoom=10)
 
     # Agregar mapa de calor con tiempo
     folium.plugins.HeatMapWithTime(
         heat_data,
         index=time_index,
         auto_play=True,
-        radius=80,
+        radius=60,
         max_opacity=0.8,
         use_local_extrema=False,
-        gradient={0.2: 'blue', 0.5: 'lime', 0.8: 'red'}
+        gradient={0.0: 'blue', 0.2: 'cyan', 0.5: 'yellow', 0.8: 'orange', 1.0: 'red'}
     ).add_to(m)
 
     # Guardar o mostrar
@@ -68,21 +68,21 @@ def createHeadMap(data, typedata):
     heat_data = []
     for t in time_index:
         subset = data[data['time'] == t]
-        frame_points = [[row['latitud'], row['longitud'], row[typedata]] for _, row in subset.iterrows()]
+        frame_points = [[row['latitud'], row['longitud'], row[typedata]  / 50] for _, row in subset.iterrows()]
         heat_data.append(frame_points)
 
     # Crear mapa base centrado
-    m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10)
+    m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10, max_zoom=10)
 
     # Agregar mapa de calor con tiempo
     folium.plugins.HeatMapWithTime(
         heat_data,
         index=time_index,
-        auto_play=True,
-        radius=80,
+        auto_play=False,
+        radius=200,
         max_opacity=0.8,
-        use_local_extrema=False,
-        gradient={0.5: 'blue', 0.7: 'lime', 0.9: 'red'}
+        use_local_extrema=True,
+        gradient={0.0: 'blue', 0.2: 'cyan', 0.5: 'yellow', 0.8: 'orange', 1.0: 'red'}
     ).add_to(m)
 
     # Guardar o mostrar

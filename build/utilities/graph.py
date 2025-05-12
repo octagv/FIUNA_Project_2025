@@ -68,6 +68,7 @@ def graphMax(values:pd.DataFrame):
     ax[3].set_ylabel("Radiacion Solar(%)")
     ax[3].set_title("Maxima de Radiacion Solar")
     fig.tight_layout()
+    fig.subplots_adjust(hspace=0.5)
     fig.show()
 
 def graphMin(values:pd.DataFrame):
@@ -76,7 +77,6 @@ def graphMin(values:pd.DataFrame):
     meanWind = values.groupby("id_station")["wind_speed"].min()
     meanRad = values.groupby("id_station")["solar_radiation"].min()
     fig, ax = mp.subplots(4,1,figsize=(10, 16))
-    
     ax[0].bar(meanTemp.index, meanTemp)
     ax[0].set_xlabel("Estacion")
     ax[0].set_ylabel("Temperatura(C°)")
@@ -94,6 +94,7 @@ def graphMin(values:pd.DataFrame):
     ax[3].set_ylabel("Radiacion Solar(%)")
     ax[3].set_title("Minima de Radiacion Solar")
     fig.tight_layout()
+    fig.subplots_adjust(hspace=0.5)
     fig.show()
 def graph3D(x_values,y_values,z_values, x_title, y_title, z_title, graph_title):
     fig = mp.figure(figsize=(8, 5))
@@ -117,3 +118,32 @@ if __name__ == "__main__":
     X,Y = np.meshgrid(x,y)
     Z = X + Y
     graph3D(X,Y,Z, "Datos X", "Datos Y", "Datos Z", "Prueba")
+
+"""
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Supongamos que estos son tus datos
+estaciones = [f'Estación {i+1}' for i in range(10)]
+temp_max = [30, 32, 31, 35, 33, 30, 28, 29, 34, 32]
+temp_min = [15, 17, 16, 18, 19, 14, 13, 15, 16, 17]
+temp_media = [22, 24, 23, 26, 25, 21, 20, 21, 25, 24]
+
+x = np.arange(len(estaciones))  # posiciones para las estaciones
+width = 0.25  # ancho de las barras
+
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.bar(x - width, temp_min, width, label='Mínima')
+ax.bar(x, temp_media, width, label='Media')
+ax.bar(x + width, temp_max, width, label='Máxima')
+
+ax.set_xlabel('Estaciones')
+ax.set_ylabel('Temperatura (°C)')
+ax.set_title('Temperatura Mínima, Media y Máxima por Estación')
+ax.set_xticks(x)
+ax.set_xticklabels(estaciones, rotation=45)
+ax.legend()
+
+plt.tight_layout()
+plt.show()
+"""

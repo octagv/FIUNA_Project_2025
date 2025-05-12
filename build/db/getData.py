@@ -13,3 +13,9 @@ def getAllData():
     con.close()
     df['time'] = pd.to_datetime(df['time'], unit='s')
     return df
+def exportData():
+    con = sqlite3.connect("db/app_log.db")
+    df = pd.read_sql_query("SELECT * FROM logs", con)
+    con.close()
+    df['time'] = pd.to_datetime(df['time'], unit='s')
+    df.to_csv("logs_export.csv", index=False)

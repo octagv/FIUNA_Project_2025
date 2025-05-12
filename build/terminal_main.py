@@ -4,7 +4,7 @@ from terminal import commands_processor
 from utilities.generator import generateInfo
 from utilities.map import createMap, createMark
 
-from db.getData import getStationPoints
+from db.getData import exportData
 from db.createdb import createDb
 from db.deletedb import deleteDb
 from db.insertData import *
@@ -48,6 +48,7 @@ while True:
     elif command[0] == "graficar":
         commands_processor.graph_process(command[1::])
     elif command[0] == "exportar":
+        exportData()
         print("Aun no añadido")
     else:
         print("Comando desconocido\n Digite ayuda para ver los comandos")
