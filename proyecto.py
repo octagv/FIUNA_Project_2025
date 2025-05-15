@@ -52,67 +52,21 @@ def getAllData():
     con.close()
     df['time'] = pd.to_datetime(df['time'], unit='s')
     return df
+def getStationPoints():
+    conection = sqlite3.connect("app_log.db")
+    cursor = conection.cursor()
+    cursor.execute("SELECT DISTINCT id_station, latitud, longitud FROM logs")
+    data = cursor.fetchall()
+    conection.close()
+    return data
 def exportData():
-    con = sqlite3.connect("db/app_log.db")
+    con = sqlite3.connect("app_log.db")
     df = pd.read_sql_query("SELECT * FROM logs", con)
     con.close()
     df['time'] = pd.to_datetime(df['time'], unit='s')
-    df.to_csv("logs_export.csv", index=False , sep=";")
+    df.to_csv("datos_exportados.csv", index=False , sep=";")
 
 #FUNCIONES DE MAPA
-def createHeadMapTemp(data):
-    data['time'] = pd.to_datetime(data['time']).dt.strftime(r'%Y-%m-%d')
-    time_index = sorted(data['time'].unique())
-    heat_data = []
-    for t in time_index:
-        subset = data[data['time'] == t]
-        frame_points = [[row['latitud'], row['longitud'], row["temperature"]  / 50] for _, row in subset.iterrows()]
-        frame_points.append([0, 0, 0])     # punto ficticio para el mínimo
-        frame_points.append([0, 0, 1])     # punto ficticio para el máximo
-        heat_data.append(frame_points)
-
-    # Crear mapa base centrado
-    m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10, max_zoom=10, min_zoom=5)
-
-    # Agregar mapa de calor con tiempo
-    folium.plugins.HeatMapWithTime(
-        heat_data,
-        index=time_index,
-        auto_play=False,
-        radius=200,
-        max_opacity=0.8,
-        use_local_extrema=True,
-        gradient={0.0: 'blue', 0.2: 'cyan', 0.5: 'yellow', 0.9: 'orange', 1.0: 'red'}
-    ).add_to(m)
-
-    # Guardar o mostrar
-    m.save('./results/heatmap_de_temperatura.html')
-def createHeadMapHum(data):
-    data['time'] = pd.to_datetime(data['time']).dt.strftime(r'%Y-%m-%d')
-    time_index = sorted(data['time'].unique())
-    heat_data = []
-    for t in time_index:
-        subset = data[data['time'] == t]
-        frame_points = [[row['latitud'], row['longitud'], row["humidity"]  / 100] for _, row in subset.iterrows()]
-        frame_points.append([0, 0, 0])     # punto ficticio para el mínimo
-        frame_points.append([0, 0, 1])     # punto ficticio para el máximo
-        heat_data.append(frame_points)
-
-    # Crear mapa base centrado
-    m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10, max_zoom=10)
-
-    # Agregar mapa de calor con tiempo
-    folium.plugins.HeatMapWithTime(
-        heat_data,
-        index=time_index,
-        auto_play=False,
-        radius=200,
-        max_opacity=0.8,
-        use_local_extrema=True,
-        gradient={0.0: 'red', 0.2: 'yellow', 0.5: 'green', 0.8: 'cyan', 1.0: 'blue'}
-    ).add_to(m)
-    # Guardar o mostrar
-    m.save('./results/heatmap_de_humedad.html')
 def createHeadMapWind(data):
     data['time'] = pd.to_datetime(data['time']).dt.strftime(r'%Y-%m-%d')
     time_index = sorted(data['time'].unique())
@@ -128,6 +82,10 @@ def createHeadMapWind(data):
     # Crear mapa base centrado
     m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10, max_zoom=10, min_zoom=5)
 
+    #Agregar marcadores
+    for station in getStationPoints():
+        folium.Marker(station[1::],popup=f"Estacion {station[0]}").add_to(m)
+
     # Agregar mapa de calor con tiempo
     folium.plugins.HeatMapWithTime(
         heat_data,
@@ -139,7 +97,7 @@ def createHeadMapWind(data):
         gradient={0.0: '#b3ecff', 0.3: '#3399ff', 0.6: '#3366cc', 1.0: '#6600cc'}
     ).add_to(m)
 
-    # Guardar o mostrar
+    # Guardar mapa
     m.save('./results/heatmap_de_velocidad_viento.html')
 def createHeadMapRad(data):
     data['time'] = pd.to_datetime(data['time']).dt.strftime(r'%Y-%m-%d')
@@ -147,7 +105,7 @@ def createHeadMapRad(data):
     heat_data = []
     for t in time_index:
         subset = data[data['time'] == t]
-        frame_points = [[row['latitud'], row['longitud'], row["solar_radiation"]  / 100] for _, row in subset.iterrows()]
+        frame_points = [[row['latitud'], row['longitud'], row["solar_radiation"]  / 2000] for _, row in subset.iterrows()]
         frame_points.append([0, 0, 0])     # punto ficticio para el mínimo
         frame_points.append([0, 0, 1])     # punto ficticio para el máximo
         heat_data.append(frame_points)
@@ -155,6 +113,10 @@ def createHeadMapRad(data):
     # Crear mapa base centrado
     m = folium.Map(location=[data['latitud'].mean(), data['longitud'].mean()], zoom_start=10, max_zoom=10, min_zoom=5)
 
+    #Agregar marcadores
+    for station in getStationPoints():
+        folium.Marker(station[1::],popup=f"Estacion {station[0]}").add_to(m)
+        
     # Agregar mapa de calor con tiempo
     folium.plugins.HeatMapWithTime(
         heat_data,
@@ -170,66 +132,6 @@ def createHeadMapRad(data):
     m.save('./results/heatmap_de_radiacion_solar.html')
 
 #FUNCIONES DE GRAFICAS
-def createTempGraph(data):
-    # Crear una copia para no modificar el DataFrame original
-    df_temp = data[['time', 'temperature']].copy()
-    
-    # Asegurarse de que 'fecha' sea tipo datetime
-    df_temp['fecha'] = pd.to_datetime(df_temp['time'])
-
-    # Extraer el número del mes
-    df_temp['mes'] = df_temp['fecha'].dt.month
-
-    # Agrupar por mes y calcular estadísticas
-    resumen = df_temp.groupby('mes')['temperature'].agg(['max', 'mean', 'min']).sort_index()
-
-    # Crear el gráfico
-    plt.figure(figsize=(10, 6))
-    plt.plot(resumen.index, resumen['max'], color='red', marker='o', label='Máxima')
-    plt.plot(resumen.index, resumen['mean'], color='gold', marker='o', label='Media')
-    plt.plot(resumen.index, resumen['min'], color='blue', marker='o', label='Mínima')
-
-    # Etiquetas y estilo
-    plt.title('Temperaturas mensuales')
-    plt.xlabel('Mes')
-    plt.ylabel('Temperatura (°C)')
-    plt.xticks(range(1, 13), 
-               ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
-                'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'])
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig("./results/TemperaturaMensual.png", dpi=300)
-def createHumGraph(data):
-    # Crear una copia para no modificar el DataFrame original
-    df_temp = data[['time', 'humidity']].copy()
-    
-    # Asegurarse de que 'fecha' sea tipo datetime
-    df_temp['fecha'] = pd.to_datetime(df_temp['time'])
-
-    # Extraer el número del mes
-    df_temp['mes'] = df_temp['fecha'].dt.month
-
-    # Agrupar por mes y calcular estadísticas
-    resumen = df_temp.groupby('mes')['humidity'].agg(['max', 'mean', 'min']).sort_index()
-
-    # Crear el gráfico
-    plt.figure(figsize=(10, 6))
-    plt.plot(resumen.index, resumen['max'], color='red', marker='o', label='Máxima')
-    plt.plot(resumen.index, resumen['mean'], color='gold', marker='o', label='Media')
-    plt.plot(resumen.index, resumen['min'], color='blue', marker='o', label='Mínima')
-
-    # Etiquetas y estilo
-    plt.title('Humedades mensuales')
-    plt.xlabel('Mes')
-    plt.ylabel('Humedad (%)')
-    plt.xticks(range(1, 13), 
-               ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
-                'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'])
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig("./results/HumedadMensual.png", dpi=300)
 def createWindGraph(data):
     # Crear una copia para no modificar el DataFrame original
     df_temp = data[['time', 'wind_speed']].copy()
@@ -291,19 +193,18 @@ def createRadGraph(data):
     plt.tight_layout()
     plt.savefig("./results/RadSolarMensual.png", dpi=300)
 
-def graficar_temp_estaciones(df):
-    # Usamos solo las columnas necesarias
-    df_temp = df[['id_station', 'temperature']].copy()
+
+def graphStats(data):
 
     # Agrupar por estación y calcular la media
-    medias = df_temp.groupby('id_station')['temperature'].mean().sort_index()
+    medias = data.groupby('id_station')['temperature'].mean().sort_index()
 
     # Configurar datos para el gráfico
     estaciones = medias.index.astype(str)
     x = np.arange(len(estaciones))
 
     # Generar colores únicos por barra usando una colormap
-    cmap = plt.colormaps['tab10']  # Puedes cambiar a 'tab20', 'Set3', etc.
+    cmap = plt.colormaps['tab10'] 
     colores = [cmap(i % cmap.N) for i in range(len(estaciones))]
 
     # Crear gráfico de barras
@@ -331,20 +232,13 @@ def graficar_temp_estaciones(df):
     plt.tight_layout()
     plt.savefig('./results/media_estaciones.png', dpi=300)
 
-def graficar_hum_estaciones(df):
-    # Usamos solo las columnas necesarias
-    df_temp = df[['id_station', 'humidity']].copy()
-
-    # Agrupar por estación y calcular la media
-    medias = df_temp.groupby('id_station')['humidity'].mean().sort_index()
+    #Humedades
+     # Agrupar por estación y calcular la media
+    medias = data.groupby('id_station')['humidity'].mean().sort_index()
 
     # Configurar datos para el gráfico
     estaciones = medias.index.astype(str)
     x = np.arange(len(estaciones))
-
-    # Generar colores únicos por barra usando una colormap
-    cmap = plt.colormaps['tab10']  # Puedes cambiar a 'tab20', 'Set3', etc.
-    colores = [cmap(i % cmap.N) for i in range(len(estaciones))]
 
     # Crear gráfico de barras
     plt.figure(figsize=(10, 6))
@@ -370,20 +264,13 @@ def graficar_hum_estaciones(df):
 
     plt.tight_layout()
     plt.savefig('./results/humedad_estaciones.png', dpi=300)
-def graficar_wind_estaciones(df):
-    # Usamos solo las columnas necesarias
-    df_temp = df[['id_station', 'wind_speed']].copy()
 
     # Agrupar por estación y calcular la media
-    medias = df_temp.groupby('id_station')['wind_speed'].mean().sort_index()
+    medias = data.groupby('id_station')['wind_speed'].mean().sort_index()
 
     # Configurar datos para el gráfico
     estaciones = medias.index.astype(str)
     x = np.arange(len(estaciones))
-
-    # Generar colores únicos por barra usando una colormap
-    cmap = plt.colormaps['tab10']  # Puedes cambiar a 'tab20', 'Set3', etc.
-    colores = [cmap(i % cmap.N) for i in range(len(estaciones))]
 
     # Crear gráfico de barras
     plt.figure(figsize=(10, 6))
@@ -409,20 +296,42 @@ def graficar_wind_estaciones(df):
 
     plt.tight_layout()
     plt.savefig('./results/viento_estaciones.png', dpi=300)
-def graficar_rad_estaciones(df):
-    # Usamos solo las columnas necesarias
-    df_temp = df[['id_station', 'solar_radiation']].copy()
+
+
+    # Parámetros
+    rho = 1.225  # Densidad del aire en kg/m^3
+    area = 3.0   # Área del rotor en m^2 (ajusta este valor según tu turbina)
+
+    # Calcular potencia eólica
+    potencia_eolica = 0.5 * rho * area * (medias/3.6)**3
+    
+    # Graficar
+    plt.figure(figsize=(10, 6))
+    potencia_eolica.plot(kind='bar', color=colores)
+    plt.title('Potencia eólica posible por estación')
+    plt.xlabel('ID de estación')
+    plt.ylabel('Potencia generada (W/m2)')
+
+    # Ajuste del eje Y dinámico
+    y_min = potencia_eolica.min()
+    y_max = potencia_eolica.max()
+    margen = (y_max - y_min) * 0.1 if y_max != y_min else 1  # evitar margen cero
+
+    plt.ylim(y_min - margen, y_max + margen)
+
+    plt.grid(True)
+    # Agregar etiquetas numéricas sobre cada barra
+    for i, valor in enumerate(potencia_eolica.values):
+        plt.text(x[i], valor + margen * 0.05, f'{valor:.2f}', ha='center', va='bottom', fontsize=9)
+    plt.tight_layout()
+    plt.savefig('./results/PotenciaEolica_estaciones.png')
 
     # Agrupar por estación y calcular la media
-    medias = df_temp.groupby('id_station')['solar_radiation'].mean().sort_index()
+    medias = data.groupby('id_station')['solar_radiation'].mean().sort_index()
 
     # Configurar datos para el gráfico
     estaciones = medias.index.astype(str)
     x = np.arange(len(estaciones))
-
-    # Generar colores únicos por barra usando una colormap
-    cmap = plt.colormaps['tab10']  # Puedes cambiar a 'tab20', 'Set3', etc.
-    colores = [cmap(i % cmap.N) for i in range(len(estaciones))]
 
     # Crear gráfico de barras
     plt.figure(figsize=(10, 6))
@@ -437,7 +346,7 @@ def graficar_rad_estaciones(df):
 
     # Etiquetas
     plt.xlabel('Estación')
-    plt.ylabel('Radiación media (%)')
+    plt.ylabel('Radiación media (W/m2)')
     plt.title('radiación solar media por estación')
     plt.xticks(x, estaciones)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
@@ -448,6 +357,38 @@ def graficar_rad_estaciones(df):
 
     plt.tight_layout()
     plt.savefig('./results/radiacion_estaciones.png', dpi=300)
+
+    eficiencia = 0.18  # o el valor que corresponda
+    area = 1.6  # en metros cuadrados
+
+    # Calcular potencia generada
+    potencia_solar = medias * eficiencia * area
+
+    cmap = plt.colormaps['tab10']  # Puedes cambiar a 'tab20', 'Set3', etc.
+    colores = [cmap(i % cmap.N) for i in range(len(estaciones))]
+    # Graficar
+    plt.figure(figsize=(10, 6))
+    potencia_solar.plot(kind='bar', color=colores)
+
+    # Ajuste del eje Y dinámico
+    y_min = potencia_solar.min()
+    y_max = potencia_solar.max()
+    margen = (y_max - y_min) * 0.1 if y_max != y_min else 1  # evitar margen cero
+
+    plt.ylim(y_min - margen, y_max + margen)
+
+    plt.title('Potencia Solar Posible por estación')
+    plt.xlabel('ID de estación')
+    plt.ylabel('Potencia generada (W/m²)')
+
+    plt.grid(True)
+     # Agregar etiquetas numéricas sobre cada barra
+    for i, valor in enumerate(potencia_solar.values):
+        plt.text(x[i], valor + margen * 0.05, f'{valor:.2f}', ha='center', va='bottom', fontsize=9)
+    plt.tight_layout()
+    plt.savefig("./results/potencia_solar.png", dpi=300)
+
+
 #PROGRAMA PRINCIPAL
 createDb()
 print("Bienvenido al Sistema")
@@ -496,18 +437,11 @@ while(True):
         if not len(data):
             print("No hay datos para generar los resultados")
         else:
-            createHeadMapTemp(data)
-            createHeadMapHum(data)
             createHeadMapWind(data)
             createHeadMapRad(data)
-            createTempGraph(data)
-            createHumGraph(data)
             createWindGraph(data)
             createRadGraph(data)
-            graficar_temp_estaciones(data)
-            graficar_hum_estaciones(data)
-            graficar_wind_estaciones(data)
-            graficar_rad_estaciones(data)
+            graphStats(data)
             print("Graficos y Mapas Generados")
     elif (opt == "5"):
         if not len(getAllData()):
