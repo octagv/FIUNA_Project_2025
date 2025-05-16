@@ -6,5 +6,5 @@ Pasos para probar el programa:
 2) Clonar el repositorio
 3) Dentro del repositorio (a la altura del pipfile) ejecutar "pipenv install"
 4) Ejecute "pipenv shell"
-5) Dentro de la carpeta build ejecute "python -m terminal_main"
+5) Ejecute "python proyecto.py"
 6) Listo. Pruebe el programa
