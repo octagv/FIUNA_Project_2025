@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import numpy as np
 import pandas as pd
@@ -116,7 +117,7 @@ def createHeadMapRad(data):
     #Agregar marcadores
     for station in getStationPoints():
         folium.Marker(station[1::],popup=f"Estacion {station[0]}").add_to(m)
-        
+
     # Agregar mapa de calor con tiempo
     folium.plugins.HeatMapWithTime(
         heat_data,
@@ -437,6 +438,8 @@ while(True):
         if not len(data):
             print("No hay datos para generar los resultados")
         else:
+            if not os.path.exists("results"):
+                os.makedirs("results")
             createHeadMapWind(data)
             createHeadMapRad(data)
             createWindGraph(data)
