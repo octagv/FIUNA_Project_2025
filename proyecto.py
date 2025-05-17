@@ -100,6 +100,7 @@ def createHeadMapWind(data):
 
     # Guardar mapa
     m.save('./results/heatmap_de_velocidad_viento.html')
+
 def createHeadMapRad(data):
     data['time'] = pd.to_datetime(data['time']).dt.strftime(r'%Y-%m-%d')
     time_index = sorted(data['time'].unique())
@@ -231,7 +232,7 @@ def graphStats(data):
         plt.text(x[i], valor + margen * 0.05, f'{valor:.2f}', ha='center', va='bottom', fontsize=9)
 
     plt.tight_layout()
-    plt.savefig('./results/media_estaciones.png', dpi=300)
+    plt.savefig('./results/temperatura_estaciones.png', dpi=300)
 
     #Humedades
      # Agrupar por estación y calcular la media
@@ -301,10 +302,10 @@ def graphStats(data):
 
     # Parámetros
     rho = 1.225  # Densidad del aire en kg/m^3
-    area = 3.0   # Área del rotor en m^2 (ajusta este valor según tu turbina)
+    area = 1.0   # Área del rotor en m^2 (ajusta este valor según tu turbina)
 
     # Calcular potencia eólica
-    potencia_eolica = 0.5 * rho * area * (medias/3.6)**3
+    potencia_eolica = 0.6 * rho * area * (medias/3.6)**3
     
     # Graficar
     plt.figure(figsize=(10, 6))
@@ -359,8 +360,8 @@ def graphStats(data):
     plt.tight_layout()
     plt.savefig('./results/radiacion_estaciones.png', dpi=300)
 
-    eficiencia = 0.18  # o el valor que corresponda
-    area = 1.6  # en metros cuadrados
+    eficiencia = 0.18  # Eficiencia Panel Solar
+    area = 1  # en metros cuadrados
 
     # Calcular potencia generada
     potencia_solar = medias * eficiencia * area
