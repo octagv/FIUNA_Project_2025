@@ -64,7 +64,6 @@ def exportData():
     con = sqlite3.connect("app_log.db")
     df = pd.read_sql_query("SELECT * FROM logs", con)
     con.close()
-    df['time'] = pd.to_datetime(df['time'], unit='s')
     df.to_csv("datos_exportados.csv", index=False , sep=";")
 
 #FUNCIONES DE MAPA
