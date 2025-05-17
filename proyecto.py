@@ -440,12 +440,15 @@ while(True):
         else:
             if not os.path.exists("results"):
                 os.makedirs("results")
-            createHeadMapWind(data)
-            createHeadMapRad(data)
-            createWindGraph(data)
-            createRadGraph(data)
-            graphStats(data)
-            print("Graficos y Mapas Generados")
+            try:
+                createHeadMapWind(data)
+                createHeadMapRad(data)
+                createWindGraph(data)
+                createRadGraph(data)
+                graphStats(data)
+                print("Graficos y Mapas Generados")
+            except:
+                print("Error al generar el informe")
     elif (opt == "5"):
         if not len(getAllData()):
             print("No hay datos para exportar")
